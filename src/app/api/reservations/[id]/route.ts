@@ -12,7 +12,7 @@ export async function PUT(req: Request, context: { params: Params }) {
 
     if (!reservationId) {
       return NextResponse.json(
-        { message: "Invalid or missing ReservationId" },
+        { message: "Invalid or missing Reservation Id" },
         { status: 400 }
       );
     }
