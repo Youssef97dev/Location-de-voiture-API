@@ -1,17 +1,18 @@
 import { NextResponse } from "next/server";
 import { createReservation } from "@/services/reservationService";
-import { getToken } from "next-auth/jwt";
+import { getSession } from "next-auth/react";
 
 export const POST = async (req: any) => {
-  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  const { carId, startDate, endDate } = await req.json();
+  const session = await getSession({ req });
+  const { carId, startDate, endDate, status } = await req.json();
 
   try {
     const reservation = await createReservation(
-      Number(token?.sub),
+      Number(session?.user.id),
       carId,
       new Date(startDate),
-      new Date(endDate)
+      new Date(endDate),
+      status
     );
     if (!reservation) {
       return NextResponse.json(
