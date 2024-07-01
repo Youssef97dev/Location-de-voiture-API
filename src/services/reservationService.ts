@@ -73,3 +73,16 @@ export const updateReservation = async (
     },
   });
 };
+
+export const getReservationsDuration = async () => {
+  const reservationsDuration = await prisma.$queryRaw`
+      SELECT
+      id,
+      "startDate",
+      "endDate",
+      DATE_PART('day', "endDate"::timestamp - "startDate"::timestamp) AS duration
+      FROM "Reservation"
+    `;
+
+  return reservationsDuration;
+};
