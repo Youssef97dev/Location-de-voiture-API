@@ -3,8 +3,6 @@
 import useSWR from "swr";
 import axios from "axios";
 
-import { CiCircleMore } from "react-icons/ci";
-
 const fetcher = (url: string) => axios.get(url).then((res) => res.data);
 
 const CarList = () => {
@@ -21,7 +19,7 @@ const CarList = () => {
               <th className="px-4 py-2 border-b-2 border-gray-200">Brand</th>
               <th className="px-4 py-2 border-b-2 border-gray-200">Model</th>
               <th className="px-4 py-2 border-b-2 border-gray-200">Year</th>
-              <th className="px-4 py-2 border-b-2 border-gray-200">Detail</th>
+              <th className="px-4 py-2 border-b-2 border-gray-200">Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -30,8 +28,13 @@ const CarList = () => {
                 <td className="px-4 py-2 border-b">{car.brand}</td>
                 <td className="px-4 py-2 border-b">{car.model}</td>
                 <td className="px-4 py-2 border-b">{car.year}</td>
-                <td className="px-4 py-2 border-b">
-                  <CiCircleMore size={27} />
+                <td className="px-4 py-2 border-b flex space-x-3 text-white">
+                  <button className="px-4 py-2 bg-blue-700 rounded-md">
+                    Detail
+                  </button>
+                  <button className="px-4 py-2 bg-orange-700 rounded-md">
+                    Reserve
+                  </button>
                 </td>
               </tr>
             ))}
