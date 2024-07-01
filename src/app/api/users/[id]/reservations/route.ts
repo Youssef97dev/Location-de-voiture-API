@@ -7,16 +7,16 @@ type Params = {
 
 export const GET = async (req: Request, context: { params: Params }) => {
   try {
-    const id = context.params.id;
+    const userId = context.params.id;
 
-    if (!id) {
+    if (!userId) {
       return NextResponse.json(
         { message: "Invalid or missing userId" },
         { status: 400 }
       );
     }
 
-    const reservations = await getUserReservations(Number(id));
+    const reservations = await getUserReservations(Number(userId));
     if (!reservations) {
       return NextResponse.json(
         { message: "Reservations not found" },
