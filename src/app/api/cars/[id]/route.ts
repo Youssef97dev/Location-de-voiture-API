@@ -8,16 +8,16 @@ type Params = {
 
 export async function GET(req: Request, context: { params: Params }) {
   try {
-    const id = context.params.id;
+    const carId = context.params.id;
 
-    if (!id) {
+    if (!carId) {
       return new NextResponse(
         JSON.stringify({ message: "Invalid or missing carId" }),
         { status: 400 }
       );
     }
 
-    const car = await getCarById(Number(id));
+    const car = await getCarById(Number(carId));
     if (!car) {
       return NextResponse.json({ message: "Car not found" }, { status: 404 });
     }
