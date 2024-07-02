@@ -1,31 +1,22 @@
 import { NextResponse } from "next/server";
 import { createReservation } from "@/services/reservationService";
-import { getSession } from "next-auth/react";
+import { getToken } from "next-auth/jwt";
+import { Reservation } from "@/types/Reservation";
 
 export const POST = async (req: any) => {
-  const session = await getSession({ req });
   const { carId, startDate, endDate, status } = await req.json();
-
+  const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
+  const userId: number = Number(token?.sub);
   try {
-    const reservation = await createReservation(
-      Number(session?.user.id),
+    const reservation: Reservation = await createReservation(
+      userId,
       carId,
       new Date(startDate),
       new Date(endDate),
       status
     );
-    if (!reservation) {
-      return NextResponse.json(
-        { message: "Car is already reserved for the selected dates" },
-        { status: 409 }
-      );
-    }
-    return NextResponse.json(reservation, { status: 201 });
-  } catch (error) {
-    console.log(error);
-    return NextResponse.json(
-      { message: "Error creating reservation", error },
-      { status: 500 }
-    );
+    return NextResponse.json({ reservation }, { status: 201 });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
   }
 };

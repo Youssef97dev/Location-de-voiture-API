@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { Summary } from "@/types/Reservation";
 
 export const getUserReservations = async (userId: number) => {
   return await prisma.reservation.findMany({
@@ -8,7 +9,7 @@ export const getUserReservations = async (userId: number) => {
 };
 
 export const getUserReservationsSummary = async () => {
-  const reservationsSummary = await prisma.$queryRaw`
+  const reservationsSummary: Summary[] = await prisma.$queryRaw`
   SELECT u.id,
          u."firstName",
          u."lastName",

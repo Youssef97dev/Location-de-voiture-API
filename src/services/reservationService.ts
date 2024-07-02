@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { Duration, Reservation } from "@/types/Reservation";
 
 export const createReservation = async (
   userId: number,
@@ -8,15 +9,16 @@ export const createReservation = async (
   status: string
 ) => {
   // Check car availability
-  const overlappingReservations = await prisma.reservation.findMany({
-    where: {
-      id: carId,
-      AND: [{ startDate: { lte: endDate }, endDate: { gte: startDate } }],
-    },
-  });
+  const overlappingReservations: Reservation[] =
+    await prisma.reservation.findMany({
+      where: {
+        carId,
+        AND: [{ startDate: { lte: endDate }, endDate: { gte: startDate } }],
+      },
+    });
 
   if (overlappingReservations.length > 0) {
-    return;
+    throw new Error("The car is not available for the selected dates");
   }
 
   return await prisma.reservation.create({
@@ -39,24 +41,27 @@ export const updateReservation = async (
   status: string
 ) => {
   // Check reservation if exist
-  const reservation = await prisma.reservation.findUnique({ where: { id } });
+  const reservation: Reservation | null = await prisma.reservation.findUnique({
+    where: { id },
+  });
   if (!reservation) {
     throw new Error("Reservation not found");
   }
 
   // Check car availability
-  const overlappingReservations = await prisma.reservation.findMany({
-    where: {
-      carId,
-      AND: [
-        {
-          id: { not: id },
-          startDate: { lte: endDate },
-          endDate: { gte: startDate },
-        },
-      ],
-    },
-  });
+  const overlappingReservations: Reservation[] =
+    await prisma.reservation.findMany({
+      where: {
+        carId,
+        AND: [
+          {
+            id: { not: id },
+            startDate: { lte: endDate },
+            endDate: { gte: startDate },
+          },
+        ],
+      },
+    });
 
   if (overlappingReservations.length > 0) {
     throw new Error("The car is not available for the selected dates");
@@ -75,7 +80,7 @@ export const updateReservation = async (
 };
 
 export const getReservationsDuration = async () => {
-  const reservationsDuration = await prisma.$queryRaw`
+  const reservationsDuration: Duration[] = await prisma.$queryRaw`
       SELECT
       id,
       "startDate",

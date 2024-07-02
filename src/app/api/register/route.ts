@@ -1,18 +1,17 @@
 import { NextResponse } from "next/server";
-import { NextApiRequest } from "next";
 import prisma from "@/lib/prisma";
 import { hashPassword } from "@/lib/auth";
+import { User } from "@/types/User";
 
-export async function POST(req: any) {
+export async function POST(req: Request) {
   try {
-    console.log("req body:", req.body);
     const { email, password, firstName, lastName, adresse, phoneNumber } =
       await req.json();
 
     // Hash password
-    const hashedPassword = await hashPassword(password);
+    const hashedPassword: string = await hashPassword(password);
 
-    const newUser = await prisma.user.create({
+    const newUser: User = await prisma.user.create({
       data: {
         email,
         password: hashedPassword,
@@ -28,9 +27,8 @@ export async function POST(req: any) {
       { status: 201 }
     );
   } catch (error) {
-    console.log("error: ", error);
     return NextResponse.json(
-      { message: "Error creating user" },
+      { message: "Error creating user", error },
       { status: 500 }
     );
   }

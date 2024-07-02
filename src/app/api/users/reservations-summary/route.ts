@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { getUserReservationsSummary } from "@/services/userService";
+import { Summary } from "@/types/Reservation";
 
-export const GET = async (req: Request, res: Response) => {
+export const GET = async () => {
   try {
-    const reservationsSummary = await getUserReservationsSummary();
+    const reservationsSummary: Summary[] = await getUserReservationsSummary();
     return await NextResponse.json({ reservationsSummary }, { status: 200 });
-  } catch (error: any) {
-    console.log(error.message);
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error getting reservations summary", error },
+      { status: 500 }
+    );
   }
 };

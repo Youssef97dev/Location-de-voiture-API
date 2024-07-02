@@ -1,11 +1,15 @@
 import { NextResponse } from "next/server";
 import { getAvailableCars } from "@/services/carService";
+import { Car } from "@/types/Car";
 
-export const GET = async (req: Request, res: Response) => {
+export const GET = async () => {
   try {
-    const cars = await getAvailableCars();
-    return NextResponse.json({ data: cars }, { status: 200 });
+    const cars: Car[] | null = await getAvailableCars();
+    return NextResponse.json({ cars }, { status: 200 });
   } catch (error) {
-    console.log(error);
+    return NextResponse.json(
+      { message: "Error getting available cars", error },
+      { status: 500 }
+    );
   }
 };
