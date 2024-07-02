@@ -53,6 +53,10 @@ export const updateReservation = async (
     throw new Error("Reservation not found");
   }
 
+  if (endDate < startDate) {
+    throw new Error("The end date must not precede the start date");
+  }
+
   // Check car availability
   const overlappingReservations: Reservation[] =
     await prisma.reservation.findMany({
