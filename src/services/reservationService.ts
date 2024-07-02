@@ -8,6 +8,11 @@ export const createReservation = async (
   endDate: Date,
   status: string
 ) => {
+  // Check date order
+  if (endDate < startDate) {
+    throw new Error("The end date must not precede the start date");
+  }
+
   // Check car availability
   const overlappingReservations: Reservation[] =
     await prisma.reservation.findMany({
