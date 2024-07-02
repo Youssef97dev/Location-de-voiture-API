@@ -15,13 +15,16 @@ const Navbar = () => {
                 Home
               </span>
             </Link>
-            {session && (
-              <Link href="/reservations" passHref>
-                <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
-                  Reservations
-                </span>
-              </Link>
-            )}
+            <Link href="/cars" passHref>
+              <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
+                Cars List
+              </span>
+            </Link>
+            <Link href="/reservations" passHref>
+              <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
+                Reservations List
+              </span>
+            </Link>
           </div>
           <div className="flex space-x-4">
             {!session ? (
