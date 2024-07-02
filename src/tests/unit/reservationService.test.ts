@@ -53,7 +53,7 @@ describe("Reservation Service", () => {
       expect(reservation).toEqual(mockReservation);
       expect(prisma.reservation.findMany).toHaveBeenCalledWith({
         where: {
-          id: 1,
+          carId: 1,
           AND: [
             {
               startDate: { lte: new Date("2023/06/05") },
@@ -87,18 +87,19 @@ describe("Reservation Service", () => {
         mockReservation,
       ]);
 
-      const reservation = await createReservation(
-        1,
-        1,
-        new Date("2023/06/01"),
-        new Date("2023/06/05"),
-        "confirmed"
-      );
+      await expect(
+        createReservation(
+          1,
+          1,
+          new Date("2023/06/01"),
+          new Date("2023/06/05"),
+          "confirmed"
+        )
+      ).rejects.toThrow("The car is not available for the selected dates");
 
-      expect(reservation).toBeUndefined();
       expect(prisma.reservation.findMany).toHaveBeenCalledWith({
         where: {
-          id: 1,
+          carId: 1,
           AND: [
             {
               startDate: { lte: new Date("2023/06/05") },
