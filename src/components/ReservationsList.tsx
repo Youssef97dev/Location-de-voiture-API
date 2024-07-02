@@ -4,6 +4,9 @@ import useSWR from "swr";
 import axios from "axios";
 import { useSession } from "next-auth/react";
 
+// Type of car
+import { Reservation } from "@/types/Reservation";
+
 const getUserReservations = (url: string) =>
   axios.get(url).then((res) => res.data);
 
@@ -14,12 +17,11 @@ const ReservationsList = () => {
     getUserReservations
   );
 
-  console.log(data.reservations.car);
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
   return (
     <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4 text-left">Cars</h1>
+      <h1 className="text-2xl font-bold mb-4 text-left">Reservations</h1>
       <div className="overflow-x-auto">
         <table className="min-w-full bg-white border border-gray-200 text-left">
           <thead>
@@ -35,11 +37,17 @@ const ReservationsList = () => {
             </tr>
           </thead>
           <tbody>
-            {data?.reservations?.map((reservation: any) => (
+            {data?.reservations?.map((reservation: Reservation) => (
               <tr key={reservation.id} className="hover:bg-gray-100">
-                <td className="px-4 py-2 border-b">{reservation.car.brand}</td>
-                <td className="px-4 py-2 border-b">{reservation.startDate}</td>
-                <td className="px-4 py-2 border-b">{reservation.endDate}</td>
+                <td className="px-4 py-2 border-b">
+                  {reservation?.car?.brand}
+                </td>
+                <td className="px-4 py-2 border-b">
+                  {reservation.startDate.toString()}
+                </td>
+                <td className="px-4 py-2 border-b">
+                  {reservation.endDate.toString()}
+                </td>
                 <td className="px-4 py-2 border-b">{reservation.status}</td>
               </tr>
             ))}

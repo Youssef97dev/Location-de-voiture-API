@@ -3,10 +3,14 @@
 import useSWR from "swr";
 import axios from "axios";
 
-const fetcher = (url: string) => axios.get(url).then((res) => res.data);
+// Type of car
+import { Car } from "@/types/Car";
+
+const getAvailableCars = (url: string) =>
+  axios.get(url).then((res) => res.data);
 
 const CarList = () => {
-  const { data, error } = useSWR("/api/cars", fetcher);
+  const { data, error } = useSWR("/api/cars", getAvailableCars);
   if (error) return <div>Failed to load</div>;
   if (!data) return <div>Loading...</div>;
   return (
@@ -23,7 +27,7 @@ const CarList = () => {
             </tr>
           </thead>
           <tbody>
-            {data.data.map((car: any) => (
+            {data.cars.map((car: Car) => (
               <tr key={car.id} className="hover:bg-gray-100">
                 <td className="px-4 py-2 border-b">{car.brand}</td>
                 <td className="px-4 py-2 border-b">{car.model}</td>
