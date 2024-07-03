@@ -1,4 +1,4 @@
-export type Car = {
+export interface Car {
   id: number;
   brand: string;
   model: string;
@@ -6,4 +6,4 @@ export type Car = {
   available: boolean;
   createdAt: Date;
   updatedAt: Date;
-};
+}

@@ -1,14 +1,14 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import {
   getUserReservations,
   getUserReservationsSummary,
-} from "@/services/userService";
+} from "@/services/user-service";
 
 // Mock Prisma Client
 jest.mock("@/lib/prisma", () => {
   return {
     __esModule: true,
-    default: {
+    prisma: {
       reservation: {
         findMany: jest.fn(),
       },
@@ -62,10 +62,16 @@ describe("User Service", () => {
       const reservations = await getUserReservations(1);
 
       expect(reservations).toEqual(mockReservations);
-      expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: { userId: 1 },
         include: { car: true },
       });
+
+      findManyMock.mockRestore();
     });
 
     test("should throw an error if getUserReservations fails", async () => {

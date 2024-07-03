@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { Summary } from "@/types/Reservation";
+import { prisma } from "@/lib/prisma";
+import type { Summary } from "@/types/reservation";
 
 export const getUserReservations = async (userId: number) => {
   return await prisma.reservation.findMany({

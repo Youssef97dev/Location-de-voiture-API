@@ -1,5 +1,5 @@
-import prisma from "@/lib/prisma";
-import { Duration, Reservation } from "@/types/Reservation";
+import { prisma } from "@/lib/prisma";
+import type { Duration, Reservation } from "@/types/reservation";
 
 export const createReservation = async (
   userId: number,

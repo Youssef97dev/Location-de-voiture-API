@@ -1,12 +1,16 @@
+import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
-import { createReservation } from "@/services/reservationService";
 import { getToken } from "next-auth/jwt";
-import { Reservation } from "@/types/Reservation";
 
-export const POST = async (req: any) => {
-  const { carId, startDate, endDate, status } = await req.json();
+import { createReservation } from "@/services/reservation-service";
+import type { Error } from "@/types/error";
+import type { Reservation } from "@/types/reservation";
+
+export const POST = async (req: NextRequest) => {
+  const { carId, startDate, endDate, status } =
+    (await req.json()) as Reservation;
   const token = await getToken({ req, secret: process.env.NEXTAUTH_SECRET });
-  const userId: number = Number(token?.sub);
+  const userId = Number(token?.sub);
   try {
     const reservation: Reservation = await createReservation(
       userId,
@@ -15,8 +19,11 @@ export const POST = async (req: any) => {
       new Date(endDate),
       status
     );
-    return NextResponse.json({ reservation }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json(reservation, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: (error as Error).message },
+      { status: 500 }
+    );
   }
 };

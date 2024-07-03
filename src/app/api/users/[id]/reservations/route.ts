@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { getUserReservations } from "@/services/userService";
-import { Reservation } from "@/types/Reservation";
 
-type Params = {
+import { getUserReservations } from "@/services/user-service";
+import type { Reservation } from "@/types/reservation";
+
+interface Params {
   id: string;
-};
+}
 
 export const GET = async (req: Request, context: { params: Params }) => {
   try {
-    const userId: number = Number(context.params.id);
+    const userId = Number(context.params.id);
 
     if (!userId) {
       return NextResponse.json(
@@ -18,14 +19,14 @@ export const GET = async (req: Request, context: { params: Params }) => {
     }
 
     const reservations: Reservation[] = await getUserReservations(userId);
-    if (!reservations) {
+    if (reservations.length <= 0) {
       return NextResponse.json(
         { message: "Reservations not found" },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ reservations }, { status: 200 });
+    return NextResponse.json(reservations, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Error getting user reservations", error },

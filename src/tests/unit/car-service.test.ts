@@ -1,11 +1,11 @@
-import prisma from "@/lib/prisma";
-import { getAvailableCars, getCarById } from "@/services/carService";
+import { prisma } from "@/lib/prisma";
+import { getAvailableCars, getCarById } from "@/services/car-service";
 
 // Mock Prisma Client
 jest.mock("@/lib/prisma", () => {
   return {
     __esModule: true,
-    default: {
+    prisma: {
       car: {
         findMany: jest.fn(),
         findUnique: jest.fn(),
@@ -37,9 +37,16 @@ describe("Car Service", () => {
       const cars = await getAvailableCars();
 
       expect(cars).toEqual(mockCars);
-      expect(prisma.car.findMany).toHaveBeenCalledWith({
+
+      const findManyMock = jest
+        .spyOn(prisma.car, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: { available: true },
       });
+
+      findManyMock.mockRestore();
     });
 
     test("should throw an error if getAvailableCars fails", async () => {
@@ -66,9 +73,16 @@ describe("Car Service", () => {
       const car = await getCarById(1);
 
       expect(car).toEqual(mockCar);
-      expect(prisma.car.findUnique).toHaveBeenCalledWith({
+
+      const findUniqueMock = jest
+        .spyOn(prisma.car, "findUnique")
+        .mockResolvedValue(car);
+
+      expect(findUniqueMock).toHaveBeenCalledWith({
         where: { id: 1 },
       });
+
+      findUniqueMock.mockRestore();
     });
 
     test("should throw an error if getCarById fails", async () => {

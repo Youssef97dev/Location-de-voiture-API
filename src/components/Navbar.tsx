@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useSession, signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const Navbar = () => {
   const { data: session } = useSession();
@@ -10,17 +10,17 @@ const Navbar = () => {
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-4">
           <div className="flex space-x-4">
-            <Link href="/" passHref>
+            <Link passHref href="/">
               <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
                 Home
               </span>
             </Link>
-            <Link href="/cars" passHref>
+            <Link passHref href="/cars">
               <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
                 Cars List
               </span>
             </Link>
-            <Link href="/reservations" passHref>
+            <Link passHref href="/reservations">
               <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
                 Reservations List
               </span>
@@ -29,12 +29,12 @@ const Navbar = () => {
           <div className="flex space-x-4">
             {!session ? (
               <>
-                <Link href="/login" passHref>
+                <Link passHref href="/login">
                   <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
                     Login
                   </span>
                 </Link>
-                <Link href="/register" passHref>
+                <Link passHref href="/register">
                   <span className="text-gray-700 hover:text-gray-900 font-semibold text-lg">
                     Register
                   </span>
@@ -42,8 +42,9 @@ const Navbar = () => {
               </>
             ) : (
               <button
-                onClick={() => signOut()}
                 className="text-gray-700 hover:text-gray-900 font-semibold text-lg"
+                type="button"
+                onClick={() => signOut()}
               >
                 Logout
               </button>
@@ -55,4 +56,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar;
+export { Navbar };

@@ -1,14 +1,15 @@
 import { NextResponse } from "next/server";
-import { getCarById } from "@/services/carService";
-import { Car } from "@/types/Car";
 
-type Params = {
+import { getCarById } from "@/services/car-service";
+import type { Car } from "@/types/car";
+
+interface Params {
   id: string;
-};
+}
 
 export async function GET(req: Request, context: { params: Params }) {
   try {
-    const carId: number = Number(context.params.id);
+    const carId = Number(context.params.id);
 
     if (!carId) {
       return NextResponse.json(
@@ -22,7 +23,7 @@ export async function GET(req: Request, context: { params: Params }) {
       return NextResponse.json({ message: "Car not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ car }, { status: 200 });
+    return NextResponse.json(car, { status: 200 });
   } catch (error) {
     return NextResponse.json(
       { message: "Error getting car", error },

@@ -1,4 +1,4 @@
-import ReservationsList from "@/components/ReservationsList";
+import { ReservationsList } from "@/components/reservation-list";
 
 const page = () => {
   return <ReservationsList />;

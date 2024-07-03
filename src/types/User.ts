@@ -1,6 +1,6 @@
-import { Reservation } from "./Reservation";
+import type { Reservation } from "./reservation";
 
-export type User = {
+export interface User {
   id: number;
   email: string;
   password: string;
@@ -12,4 +12,4 @@ export type User = {
   updatedAt: Date;
 
   reservations?: Reservation[];
-};
+}

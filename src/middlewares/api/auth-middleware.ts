@@ -1,4 +1,4 @@
-import { NextApiRequest } from "next";
+import type { NextApiRequest } from "next";
 import { getToken } from "next-auth/jwt";
 
 export async function authMiddleware(req: NextApiRequest) {

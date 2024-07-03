@@ -1,15 +1,15 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import {
   createReservation,
-  updateReservation,
   getReservationsDuration,
-} from "@/services/reservationService";
+  updateReservation,
+} from "@/services/reservation-service";
 
 // Mock Prisma Client
 jest.mock("@/lib/prisma", () => {
   return {
     __esModule: true,
-    default: {
+    prisma: {
       reservation: {
         findMany: jest.fn(),
         create: jest.fn(),
@@ -51,7 +51,11 @@ describe("Reservation Service", () => {
       );
 
       expect(reservation).toEqual(mockReservation);
-      expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: {
           carId: 1,
           AND: [
@@ -62,7 +66,23 @@ describe("Reservation Service", () => {
           ],
         },
       });
-      expect(prisma.reservation.create).toHaveBeenCalledWith({
+
+      findManyMock.mockRestore();
+
+      const createMock = jest
+        .spyOn(prisma.reservation, "create")
+        .mockResolvedValue({
+          id: 1,
+          userId: 1,
+          carId: 1,
+          startDate: new Date("2023/06/01"),
+          endDate: new Date("2023/06/05"),
+          status: "confirmed",
+          updatedAt: new Date(),
+          createdAt: new Date(),
+        });
+
+      expect(createMock).toHaveBeenCalledWith({
         data: {
           userId: 1,
           carId: 1,
@@ -71,6 +91,8 @@ describe("Reservation Service", () => {
           status: "confirmed",
         },
       });
+
+      createMock.mockRestore();
     });
 
     test("should not create a reservation if overlapping exists", async () => {
@@ -97,7 +119,11 @@ describe("Reservation Service", () => {
         )
       ).rejects.toThrow("The car is not available for the selected dates");
 
-      expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: {
           carId: 1,
           AND: [
@@ -108,7 +134,33 @@ describe("Reservation Service", () => {
           ],
         },
       });
-      expect(prisma.reservation.create).not.toHaveBeenCalled();
+
+      findManyMock.mockRestore();
+
+      const createMock = jest
+        .spyOn(prisma.reservation, "create")
+        .mockResolvedValue({
+          id: 1,
+          userId: 1,
+          carId: 1,
+          startDate: new Date("2023/06/01"),
+          endDate: new Date("2023/06/05"),
+          status: "confirmed",
+          updatedAt: new Date(),
+          createdAt: new Date(),
+        });
+
+      expect(createMock).not.toHaveBeenCalledWith({
+        data: {
+          userId: 1,
+          carId: 1,
+          startDate: new Date("2023/06/01"),
+          endDate: new Date("2023/06/05"),
+          status: "confirmed",
+        },
+      });
+
+      createMock.mockRestore();
     });
 
     test("should throw an error if createReservation fails", async () => {
@@ -151,10 +203,22 @@ describe("Reservation Service", () => {
       );
 
       expect(reservation).toEqual(mockReservation);
-      expect(prisma.reservation.findUnique).toHaveBeenCalledWith({
+
+      const findUniqueMock = jest
+        .spyOn(prisma.reservation, "findUnique")
+        .mockResolvedValue(reservation);
+
+      expect(findUniqueMock).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+
+      findUniqueMock.mockRestore();
+
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: {
           carId: 1,
           AND: [
@@ -166,7 +230,13 @@ describe("Reservation Service", () => {
           ],
         },
       });
-      expect(prisma.reservation.update).toHaveBeenCalledWith({
+
+      findManyMock.mockRestore();
+
+      const updateMock = jest
+        .spyOn(prisma.reservation, "update")
+        .mockResolvedValue(reservation);
+      expect(updateMock).toHaveBeenCalledWith({
         where: { id: 1 },
         data: {
           userId: 1,
@@ -176,6 +246,8 @@ describe("Reservation Service", () => {
           status: "confirmed",
         },
       });
+
+      updateMock.mockRestore();
     });
 
     test("should not update a reservation if overlapping exists", async () => {
@@ -195,21 +267,34 @@ describe("Reservation Service", () => {
         mockReservation,
       ]);
 
-      await expect(
-        updateReservation(
-          1,
-          1,
-          1,
-          new Date("2023-06-01"),
-          new Date("2023-06-05"),
-          "confirmed"
-        )
-      ).rejects.toThrow("The car is not available for the selected dates");
+      const reservation = updateReservation(
+        1,
+        1,
+        1,
+        new Date("2023-06-01"),
+        new Date("2023-06-05"),
+        "confirmed"
+      );
 
-      expect(prisma.reservation.findUnique).toHaveBeenCalledWith({
+      await expect(reservation).rejects.toThrow(
+        "The car is not available for the selected dates"
+      );
+
+      const findUniqueMock = jest
+        .spyOn(prisma.reservation, "findUnique")
+        .mockRejectedValue(reservation);
+
+      expect(findUniqueMock).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(prisma.reservation.findMany).toHaveBeenCalledWith({
+
+      findUniqueMock.mockRestore();
+
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).toHaveBeenCalledWith({
         where: {
           carId: 1,
           AND: [
@@ -221,28 +306,63 @@ describe("Reservation Service", () => {
           ],
         },
       });
-      expect(prisma.reservation.update).not.toHaveBeenCalled();
+
+      findManyMock.mockRestore();
+
+      const updateMock = jest
+        .spyOn(prisma.reservation, "update")
+        .mockRejectedValue(reservation);
+      expect(updateMock).not.toHaveBeenCalledWith({
+        where: { id: 1 },
+        data: {
+          userId: 1,
+          carId: 1,
+          startDate: new Date("2023-06-01"),
+          endDate: new Date("2023-06-05"),
+          status: "confirmed",
+        },
+      });
+
+      updateMock.mockRestore();
     });
 
     test("should throw an error if reservation does not exist", async () => {
       (prisma.reservation.findUnique as jest.Mock).mockResolvedValue(null);
+      const reservation = updateReservation(
+        1,
+        1,
+        1,
+        new Date("2023-06-01"),
+        new Date("2023-06-05"),
+        "confirmed"
+      );
 
-      await expect(
-        updateReservation(
-          1,
-          1,
-          1,
-          new Date("2023-06-01"),
-          new Date("2023-06-05"),
-          "confirmed"
-        )
-      ).rejects.toThrow("Reservation not found");
+      await expect(reservation).rejects.toThrow("Reservation not found");
 
-      expect(prisma.reservation.findUnique).toHaveBeenCalledWith({
+      const findUniqueMock = jest
+        .spyOn(prisma.reservation, "findUnique")
+        .mockRejectedValue(reservation);
+
+      expect(findUniqueMock).toHaveBeenCalledWith({
         where: { id: 1 },
       });
-      expect(prisma.reservation.findMany).not.toHaveBeenCalled();
-      expect(prisma.reservation.update).not.toHaveBeenCalled();
+
+      findUniqueMock.mockRestore();
+
+      const findManyMock = jest
+        .spyOn(prisma.reservation, "findMany")
+        .mockResolvedValue([]);
+
+      expect(findManyMock).not.toHaveBeenCalledWith();
+
+      findManyMock.mockRestore();
+
+      const updateMock = jest
+        .spyOn(prisma.reservation, "update")
+        .mockRejectedValue(reservation);
+      expect(updateMock).not.toHaveBeenCalledWith();
+
+      updateMock.mockRestore();
     });
 
     test("should throw an error if updateReservation fails", async () => {

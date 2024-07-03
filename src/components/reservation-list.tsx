@@ -1,24 +1,25 @@
 "use client";
 
-import useSWR from "swr";
 import axios from "axios";
 import { useSession } from "next-auth/react";
+import useSWR from "swr";
 
 // Type of car
-import { Reservation } from "@/types/Reservation";
+import type { Error } from "@/types/error";
+import type { Reservation } from "@/types/reservation";
 
 const getUserReservations = (url: string) =>
-  axios.get(url).then((res) => res.data);
+  axios.get(url).then((res) => res.data as Reservation[]);
 
 const ReservationsList = () => {
   const { data: session } = useSession();
-  const { data, error } = useSWR(
-    session ? `/api/users/${session.user.id}/reservations` : null,
+  const { data: reservations, error } = useSWR<Reservation[], Error>(
+    session?.user.id ? `/api/users/${session.user.id}/reservations` : null,
     getUserReservations
   );
 
   if (error) return <div>Failed to load</div>;
-  if (!data) return <div>Loading...</div>;
+  if (!reservations) return <div>Loading...</div>;
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4 text-left">Reservations</h1>
@@ -37,11 +38,9 @@ const ReservationsList = () => {
             </tr>
           </thead>
           <tbody>
-            {data?.reservations?.map((reservation: Reservation) => (
+            {reservations.map((reservation: Reservation) => (
               <tr key={reservation.id} className="hover:bg-gray-100">
-                <td className="px-4 py-2 border-b">
-                  {reservation?.car?.brand}
-                </td>
+                <td className="px-4 py-2 border-b">{reservation.car?.brand}</td>
                 <td className="px-4 py-2 border-b">
                   {reservation.startDate.toString()}
                 </td>
@@ -58,4 +57,4 @@ const ReservationsList = () => {
   );
 };
 
-export default ReservationsList;
+export { ReservationsList };

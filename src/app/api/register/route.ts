@@ -1,12 +1,13 @@
 import { NextResponse } from "next/server";
-import prisma from "@/lib/prisma";
+
 import { hashPassword } from "@/lib/auth";
-import { User } from "@/types/User";
+import { prisma } from "@/lib/prisma";
+import type { User } from "@/types/user";
 
 export async function POST(req: Request) {
   try {
-    const { email, password, firstName, lastName, adresse, phoneNumber } =
-      await req.json();
+    const { email, password, firstName, lastName, phoneNumber, adresse } =
+      (await req.json()) as User;
 
     // Hash password
     const hashedPassword: string = await hashPassword(password);

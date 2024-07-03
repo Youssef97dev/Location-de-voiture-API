@@ -1,6 +1,6 @@
-import { Car } from "./Car";
+import type { Car } from "./car";
 
-export type Reservation = {
+export interface Reservation {
   id: number;
   userId: number;
   carId: number;
@@ -9,18 +9,18 @@ export type Reservation = {
   status: string;
 
   car?: Car;
-};
+}
 
-export type Duration = {
+export interface Duration {
   startDate: Date;
   endDate: Date;
   duration: number;
-};
+}
 
-export type Summary = {
+export interface Summary {
   id: number;
   firstName: string;
   lastName: string;
   totalreservations: number;
   totalduration: number;
-};
+}

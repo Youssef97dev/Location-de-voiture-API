@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 const RegisterForm = () => {
   const router = useRouter();
@@ -16,7 +16,6 @@ const RegisterForm = () => {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(firstName);
     try {
       const res = await axios.post("api/register", {
         firstName,
@@ -27,63 +26,64 @@ const RegisterForm = () => {
         adresse,
       });
 
-      if (res.status == 201) {
+      if (res.status === 201) {
         router.replace("/login");
-      } else {
-        console.log("User registration failed.");
       }
     } catch (error) {
-      console.log("Error during registration: ", error);
+      router.replace("/");
     }
   };
   return (
     <div className="grid place-items-center h-screen">
       <div className="bg-blue-500 shadow-lg p-5 rounded-lg text-black w-[30%]">
         <h1 className="text-xl font-bold my-4">Register</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <form className="flex flex-col gap-3" onSubmit={handleSubmit}>
           <input
-            onChange={(e) => setFirstName(e.target.value)}
-            type={"text"}
+            required
+            className="bg-white text-black rounded-lg px-3 py-2"
             placeholder="First Name"
-            className="bg-white text-black rounded-lg px-3 py-2"
-            required
+            type="text"
+            onChange={(e) => setFirstName(e.target.value)}
           />
           <input
-            onChange={(e) => setLastName(e.target.value)}
-            type={"text"}
+            required
+            className="bg-white text-black rounded-lg px-3 py-2"
             placeholder="Last Name"
-            className="bg-white text-black rounded-lg px-3 py-2"
-            required
+            type="text"
+            onChange={(e) => setLastName(e.target.value)}
           />
           <input
-            onChange={(e) => setPhoneNumber(e.target.value)}
+            required
+            className="bg-white text-black rounded-lg px-3 py-2"
             placeholder="Phone Number"
-            className="bg-white text-black rounded-lg px-3 py-2"
-            required
-            type={"tel"}
+            type="tel"
+            onChange={(e) => setPhoneNumber(e.target.value)}
           />
           <input
-            onChange={(e) => setAdresse(e.target.value)}
+            required
+            className="bg-white text-black rounded-lg px-3 py-2"
             placeholder="Adresse"
-            className="bg-white text-black rounded-lg px-3 py-2"
-            required
-            type={"text"}
+            type="text"
+            onChange={(e) => setAdresse(e.target.value)}
           />
           <input
-            onChange={(e) => setEmail(e.target.value)}
-            type={"email"}
+            required
+            className="bg-white text-black rounded-lg px-3 py-2"
             placeholder="Email"
-            className="bg-white text-black rounded-lg px-3 py-2"
-            required
+            type="email"
+            onChange={(e) => setEmail(e.target.value)}
           />
           <input
-            onChange={(e) => setPassword(e.target.value)}
-            type={"password"}
-            placeholder="Password"
             required
             className="bg-white text-black rounded-lg px-3 py-2"
+            placeholder="Password"
+            type="password"
+            onChange={(e) => setPassword(e.target.value)}
           />
-          <button className="bg-blue-600 text-white font-bold cursor-pointer px-6 py-2">
+          <button
+            className="bg-blue-600 text-white font-bold cursor-pointer px-6 py-2"
+            type="submit"
+          >
             Register
           </button>
         </form>
@@ -92,4 +92,4 @@ const RegisterForm = () => {
   );
 };
 
-export default RegisterForm;
+export { RegisterForm };

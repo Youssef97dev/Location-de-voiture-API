@@ -1,15 +1,16 @@
+import type { NextApiRequest } from "next";
 import { NextResponse } from "next/server";
-import { authMiddleware } from "@/middlewares/api/authMiddleware";
-import { NextApiRequest } from "next";
+
+import { authMiddleware } from "@/middlewares/api/auth-middleware";
 
 export const config = {
   matcher: "/api/:path*",
 };
 
-export default async function middleware(request: NextApiRequest) {
+export async function middleware(request: NextApiRequest) {
   const authResult = await authMiddleware(request);
   if (
-    !authResult?.isValid &&
+    !authResult.isValid &&
     !request.url?.includes("api/register") &&
     !request.url?.includes("api/auth")
   ) {

@@ -1,14 +1,16 @@
 import { NextResponse } from "next/server";
-import { updateReservation } from "@/services/reservationService";
-import { Reservation } from "@/types/Reservation";
 
-type Params = {
+import { updateReservation } from "@/services/reservation-service";
+import type { Error } from "@/types/error";
+import type { Reservation } from "@/types/reservation";
+
+interface Params {
   id: string;
-};
+}
 
 export async function PUT(req: Request, context: { params: Params }) {
   try {
-    const reservationId: number = Number(context.params.id);
+    const reservationId = Number(context.params.id);
 
     if (!reservationId) {
       return NextResponse.json(
@@ -17,7 +19,8 @@ export async function PUT(req: Request, context: { params: Params }) {
       );
     }
 
-    const { userId, carId, startDate, endDate, status } = await req.json();
+    const { userId, carId, startDate, endDate, status } =
+      (await req.json()) as Reservation;
 
     const reservation: Reservation = await updateReservation(
       Number(reservationId),
@@ -28,8 +31,11 @@ export async function PUT(req: Request, context: { params: Params }) {
       status
     );
 
-    return NextResponse.json({ reservation }, { status: 201 });
-  } catch (error: any) {
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json(reservation, { status: 201 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: (error as Error).message },
+      { status: 500 }
+    );
   }
 }
